@@ -4,9 +4,9 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project.IServices.Base
+namespace Project.IService.Base
 {
-    public interface IBaseServices<TEntity> where TEntity : class
+    public interface IBaseService<TEntity> where TEntity : class
     {
         Task<TEntity> QueryByID(object objId);
         Task<TEntity> QueryByID(object objId, bool blnUseCache = false);

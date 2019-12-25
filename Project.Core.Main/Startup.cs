@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Autofac.Extras.DynamicProxy;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,9 @@ using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Project.Core.Main
 {
+    /// <summary>
+    /// 配置服务和管道
+    /// </summary>
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -31,9 +35,9 @@ namespace Project.Core.Main
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddCors();
+            //services.AddCors();
             //services.AddMvc();
-            //services.AddAutofac();
+            services.AddAutofac();
             var ConnectionString = Configuration.GetSection("AppSettings:SqlServerConnection").Value;
             #region Swagger
 
@@ -95,16 +99,19 @@ namespace Project.Core.Main
         {
             //var basePath = Microsoft.DotNet.PlatformAbstractions.ApplicationEnvironment.ApplicationBasePath;
             var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-
+           // builder.(Assembly.GetExecutingAssembly()).PropertiesAutowired();
 
             try
             {
+                //builder.RegisterType<Project.Services>().As<Project.IServices>();
                 #region Service.dll 注入，有对应接口
                 //获取项目绝对路径，请注意，这个是实现类的dll文件，不是接口 IService.dll ，注入容器当然是Activatore
                 var servicesDllFile = Path.Combine(basePath, "Project.Service.dll");
                 var assemblysServices = Assembly.LoadFrom(servicesDllFile);//直接采用加载文件的方法  ※※★※※ 如果你是第一次下载项目，请先F6编译，然后再F5执行，※※★※※
 
-                builder.RegisterAssemblyTypes(assemblysServices).AsImplementedInterfaces();//指定已扫描程序集中的类型注册为提供所有其实现的接口。
+                builder.RegisterAssemblyTypes(assemblysServices)
+                    .AsImplementedInterfaces();
+                   // .PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);//指定已扫描程序集中的类型注册为提供所有其实现的接口。
 
 
                 // AOP 开关，如果想要打开指定的功能，只需要在 appsettigns.json 对应对应 true 就行。
@@ -126,10 +133,10 @@ namespace Project.Core.Main
                 //    cacheType.Add(typeof(BlogLogAOP));
                 //}
 
-                builder.RegisterAssemblyTypes(assemblysServices)
-                          .AsImplementedInterfaces();
+                //builder.RegisterAssemblyTypes(assemblysServices)
+                //          .AsImplementedInterfaces()
                 //          .InstancePerLifetimeScope()
-                //          .EnableInterfaceInterceptors()//引用Autofac.Extras.DynamicProxy;
+                //          .EnableInterfaceInterceptors();//引用Autofac.Extras.DynamicProxy;
                 //                                        // 如果你想注入两个，就这么写  InterceptedBy(typeof(BlogCacheAOP), typeof(BlogLogAOP));
                 //                                        // 如果想使用Redis缓存，请必须开启 redis 服务，端口号我的是6319，如果不一样还是无效，否则请使用memory缓存 BlogCacheAOP
                 //          .InterceptedBy(cacheType.ToArray());//允许将拦截器服务的列表分配给注册。 

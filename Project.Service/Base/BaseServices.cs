@@ -1,5 +1,5 @@
 ﻿using IRepository.Base;
-using Project.IServices.Base;
+using Project.IService.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Project.Service.Base
 {
-    public class BaseServices<TEntity> : IBaseServices<TEntity> where TEntity : class, new()
+    public class BaseServices<TEntity> : IBaseService<TEntity> where TEntity : class, new()
     {
         public IBaseRespository<TEntity> baseDal;//数据仓储基类不用注入，在子类的构造函数中注入
 

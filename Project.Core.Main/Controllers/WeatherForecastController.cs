@@ -4,7 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Project.IServices.Interface;
+using Project.IService;
+using Project.IService.Interface;
 
 namespace Project.Core.Main.Controllers
 {
@@ -16,14 +17,15 @@ namespace Project.Core.Main.Controllers
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
-        readonly IAdvertisementService _advertisementServices;
+        //readonly IAdvertisementService _advertisementServices;
+        public ITestService service;
+        //private readonly ILogger<WeatherForecastController> _logger;
+        //ILogger<WeatherForecastController> logger,
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, IAdvertisementService advertisementServices)
+        public WeatherForecastController(ITestService _service)
         {
-            _advertisementServices = advertisementServices;
-            _logger = logger;
+            service = _service;
+            //_logger = logger;
         }
         /// <summary>
         /// api 接口注释
@@ -50,7 +52,7 @@ namespace Project.Core.Main.Controllers
         [HttpPost]
         public object Sum(int a ,int b)
         {
-            return Ok(_advertisementServices.Sum(a,b));
+            return Ok(1);
         }
     }
 }

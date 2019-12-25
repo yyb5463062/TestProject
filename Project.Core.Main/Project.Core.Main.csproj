@@ -18,11 +18,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IRepository\IRepository.csproj" />
-    <ProjectReference Include="..\Project.IServices\Project.IServices.csproj" />
+    <ProjectReference Include="..\Project.IService\Project.IService.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Filters\" />
+    <Folder Include="wwwroot\img\" />
+    <Folder Include="wwwroot\js\" />
   </ItemGroup>
 
 

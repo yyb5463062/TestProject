@@ -1,4 +1,4 @@
-﻿using Project.IServices.Interface;
+﻿using Project.IService.Interface;
 using Project.Model.Models;
 using Project.Service.Base;
 using System;
