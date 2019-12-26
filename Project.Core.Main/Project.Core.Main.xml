@@ -18,5 +18,10 @@
             <param name="b">参数2</param>
             <returns></returns>
         </member>
+        <member name="T:Project.Core.Main.Startup">
+            <summary>
+            配置服务和管道
+            </summary>
+        </member>
     </members>
 </doc>

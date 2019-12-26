@@ -10,8 +10,12 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class AdvertisementRepository : BaseRepository<AdvertisementModel>, IBaseRespository<AdvertisementModel>
+    public class AdvertisementRepository : BaseRepository<AdvertisementModel>, IAdvertisementRepository
     {
-        
+
+        public int Sum(int i, int j)
+        {
+            return 2;
+        }
     }
 }

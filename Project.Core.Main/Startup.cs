@@ -23,14 +23,17 @@ namespace Project.Core.Main
     /// </summary>
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            Env = env;
         }
 
         public IConfiguration Configuration { get; }
+        public IWebHostEnvironment Env { get; }
 
-        
+        public ILifetimeScope AutofacContainer { get; private set; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -92,11 +95,12 @@ namespace Project.Core.Main
             //    options.AddPolicy("Admin", policy => policy.RequireClaim("AdminType").Build());//注册权限管理，可以自定义多个
             //});
             #endregion
-
+            services.AddOptions();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
+            builder.RegisterType<ControllerBase>().PropertiesAutowired();
             //var basePath = Microsoft.DotNet.PlatformAbstractions.ApplicationEnvironment.ApplicationBasePath;
             var basePath = PlatformServices.Default.Application.ApplicationBasePath;
            // builder.(Assembly.GetExecutingAssembly()).PropertiesAutowired();
@@ -190,6 +194,9 @@ namespace Project.Core.Main
                                    //这个时候去launchSettings.json中把"launchUrl": "swagger/index.html"去掉， 然后直接访问localhost:8001/index.html即可
             });
             #endregion
+
+            this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
+
             app.UseRouting();
             //app.UseMvc();
 

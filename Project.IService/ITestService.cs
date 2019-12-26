@@ -8,5 +8,6 @@ namespace Project.IService
 {
     public interface ITestService : IBaseService<AdvertisementModel>
     {
+        int Sum(int a, int b);
     }
 }

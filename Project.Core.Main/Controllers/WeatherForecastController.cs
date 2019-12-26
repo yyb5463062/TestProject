@@ -50,9 +50,9 @@ namespace Project.Core.Main.Controllers
         /// <param name="b">参数2</param>
         /// <returns></returns>
         [HttpPost]
-        public object Sum(int a ,int b)
-        {
-            return Ok(1);
+        public object Sum(int a=0 ,int b=0)
+        { 
+            return Ok(service.Sum(a,b));
         }
     }
 }
