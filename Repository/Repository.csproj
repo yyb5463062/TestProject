@@ -14,6 +14,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IRepository\IRepository.csproj" />
+    <ProjectReference Include="..\Project.Common\Project.Common.csproj" />
+    <ProjectReference Include="..\Project.Model\Project.Model.csproj" />
   </ItemGroup>
 
 </Project>

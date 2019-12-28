@@ -4,18 +4,15 @@
         <name>Project.Core.Main</name>
     </assembly>
     <members>
+        <member name="T:Project.Core.Main.Controllers.DictionaryController">
+            <summary>
+            字典操作
+            </summary>
+        </member>
         <member name="M:Project.Core.Main.Controllers.WeatherForecastController.Get">
             <summary>
             api 接口注释
             </summary>
-            <returns></returns>
-        </member>
-        <member name="M:Project.Core.Main.Controllers.WeatherForecastController.Sum(System.Int32,System.Int32)">
-            <summary>
-            求和
-            </summary>
-            <param name="a">参数1</param>
-            <param name="b">参数2</param>
             <returns></returns>
         </member>
         <member name="T:Project.Core.Main.Startup">

@@ -9,6 +9,9 @@ using Project.IService.Interface;
 
 namespace Project.Core.Main.Controllers
 {
+    /// <summary>
+    /// 测试控制器
+    /// </summary>
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
@@ -18,11 +21,11 @@ namespace Project.Core.Main.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
         //readonly IAdvertisementService _advertisementServices;
-        public ITestService service;
+        public ISys_DictionaryService service;
         //private readonly ILogger<WeatherForecastController> _logger;
         //ILogger<WeatherForecastController> logger,
 
-        public WeatherForecastController(ITestService _service)
+        public WeatherForecastController(ISys_DictionaryService _service)
         {
             service = _service;
             //_logger = logger;
@@ -42,17 +45,6 @@ namespace Project.Core.Main.Controllers
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray();
-        }
-        /// <summary>
-        /// 求和
-        /// </summary>
-        /// <param name="a">参数1</param>
-        /// <param name="b">参数2</param>
-        /// <returns></returns>
-        [HttpPost]
-        public object Sum(int a=0 ,int b=0)
-        { 
-            return Ok(service.Sum(a,b));
         }
     }
 }

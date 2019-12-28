@@ -1,63 +1,52 @@
-﻿using SqlSugar;
+﻿using IRepository.Sugar;
+using Project.Common.Appsettings;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Repository.Sugar
 {
-    public class DbContext
+    /// <summary>
+    /// 单例模式创建数据库连接对象
+    /// </summary>
+    public class DbContext: IDbContext
     {
-        private static string _connectionString;
-        private static DbType _dbType;
-        private SqlSugarClient _db;
-
-        /// <summary>
-        /// 连接字符串 
-        /// Blog.Core
-        /// </summary>
-        public static string ConnectionString
-        {
-            get { return _connectionString; }
-            set { _connectionString = value; }
-        }
-        /// <summary>
-        /// 数据库类型 
-        /// Blog.Core 
-        /// </summary>
-        public static DbType DbType
-        {
-            get { return _dbType; }
-            set { _dbType = value; }
-        }
-        /// <summary>
-        /// 数据连接对象 
-        /// Blog.Core 
-        /// </summary>
-        public SqlSugarClient Db
-        {
-            get { return _db; }
-            private set { _db = value; }
-        }
-
-        /// <summary>
-        /// 数据库上下文实例（自动关闭连接）
-        /// Blog.Core 
-        /// </summary>
-        public static DbContext Context
-        {
-            get
-            {
-                return new DbContext();
-            }
-
-        }
-
+        private static string _connectionString = DBConfigHelper.ConnectionString;
+        private static DbType _dbType = GetDbType();
+        private static SqlSugarClient _db = InitConn();
 
         /// <summary>
         /// 功能描述:构造函数
-        /// 作　　者:Blog.Core
         /// </summary>
-        private DbContext()
+        //private DbContext()
+        //{
+            
+        //}
+
+        /// <summary>
+        /// 功能描述:获得一个DbContext
+        /// </summary>
+        /// <param name="blnIsAutoCloseConnection">是否自动关闭连接（如果为false，则使用接受时需要手动关闭Db）</param>
+        /// <returns>返回值</returns>
+        //public static DbContext GetDbContext()
+        //{
+        //    return new DbContext();
+        //}
+
+        /// <summary>
+        /// 获取一个Client
+        /// </summary>
+        /// <returns></returns>
+        public ISqlSugarClient GetClient()
+        {
+            return _db;
+        }
+        /// <summary>
+        /// 初始化数据库连接
+        /// </summary>
+        /// <returns></returns>
+        private static SqlSugarClient InitConn()
         {
             if (string.IsNullOrEmpty(_connectionString))
                 throw new ArgumentNullException("数据库连接字符串为空");
@@ -77,48 +66,43 @@ namespace Repository.Sugar
                     IsAutoRemoveDataCache = true
                 }
             });
+            return _db;
         }
-
         /// <summary>
-        /// 功能描述:构造函数
-        /// 作　　者:Blog.Core
+        /// 功能描述:获取连接数据库类型
         /// </summary>
-        /// <param name="blnIsAutoCloseConnection">是否自动关闭连接</param>
-        private DbContext(bool blnIsAutoCloseConnection)
+        private static DbType GetDbType()
         {
-            if (string.IsNullOrEmpty(_connectionString))
-                throw new ArgumentNullException("数据库连接字符串为空");
-            _db = new SqlSugarClient(new ConnectionConfig()
+            switch((int)DBConfigHelper.DBType)
             {
-                ConnectionString = _connectionString,
-                DbType = _dbType,
-                IsAutoCloseConnection = blnIsAutoCloseConnection,
-                IsShardSameThread = true,
-                ConfigureExternalServices = new ConfigureExternalServices()
-                {
-                    //DataInfoCacheService = new HttpRuntimeCache()
-                },
-                MoreSettings = new ConnMoreSettings()
-                {
-                    //IsWithNoLockQuery = true,
-                    IsAutoRemoveDataCache = true
-                }
-            });
+                case 0:
+                    return DbType.SqlServer;
+                case 1:
+                    return DbType.MySql;
+                case 2:
+                    return DbType.Oracle;
+                default:
+                    return DbType.SqlServer;
+
+            }
         }
+        
+
+        
 
         #region 实例方法
         /// <summary>
         /// 功能描述:获取数据库处理对象
-        /// 作　　者:Blog.Core
+        
         /// </summary>
         /// <returns>返回值</returns>
-        public SimpleClient<T> GetEntityDB<T>() where T : class, new()
+        public SimpleClient GetEntityDB()
         {
-            return new SimpleClient<T>(_db);
+            return new SimpleClient(_db);
         }
         /// <summary>
         /// 功能描述:获取数据库处理对象
-        /// 作　　者:Blog.Core
+        
         /// </summary>
         /// <param name="db">db</param>
         /// <returns>返回值</returns>
@@ -130,7 +114,7 @@ namespace Repository.Sugar
         #region 根据数据库表生产实体类
         /// <summary>
         /// 功能描述:根据数据库表生产实体类
-        /// 作　　者:Blog.Core
+        
         /// </summary>       
         /// <param name="strPath">实体类存放路径</param>
         public void CreateClassFileByDBTalbe(string strPath)
@@ -139,7 +123,7 @@ namespace Repository.Sugar
         }
         /// <summary>
         /// 功能描述:根据数据库表生产实体类
-        /// 作　　者:Blog.Core
+        
         /// </summary>
         /// <param name="strPath">实体类存放路径</param>
         /// <param name="strNameSpace">命名空间</param>
@@ -150,7 +134,7 @@ namespace Repository.Sugar
 
         /// <summary>
         /// 功能描述:根据数据库表生产实体类
-        /// 作　　者:Blog.Core
+        
         /// </summary>
         /// <param name="strPath">实体类存放路径</param>
         /// <param name="strNameSpace">命名空间</param>
@@ -165,7 +149,7 @@ namespace Repository.Sugar
 
         /// <summary>
         /// 功能描述:根据数据库表生产实体类
-        /// 作　　者:Blog.Core
+        
         /// </summary>
         /// <param name="strPath">实体类存放路径</param>
         /// <param name="strNameSpace">命名空间</param>
@@ -264,7 +248,7 @@ namespace Repository.Sugar
         #region 根据实体类生成数据库表
         /// <summary>
         /// 功能描述:根据实体类生成数据库表
-        /// 作　　者:Blog.Core
+        
         /// </summary>
         /// <param name="blnBackupTable">是否备份表</param>
         /// <param name="lstEntitys">指定的实体</param>
@@ -285,7 +269,7 @@ namespace Repository.Sugar
 
         /// <summary>
         /// 功能描述:根据实体类生成数据库表
-        /// 作　　者:Blog.Core
+        
         /// </summary>
         /// <param name="blnBackupTable">是否备份表</param>
         /// <param name="lstEntitys">指定的实体</param>
@@ -307,31 +291,8 @@ namespace Repository.Sugar
         #region 静态方法
 
         /// <summary>
-        /// 功能描述:获得一个DbContext
-        /// 作　　者:Blog.Core
-        /// </summary>
-        /// <param name="blnIsAutoCloseConnection">是否自动关闭连接（如果为false，则使用接受时需要手动关闭Db）</param>
-        /// <returns>返回值</returns>
-        public static DbContext GetDbContext(bool blnIsAutoCloseConnection = true)
-        {
-            return new DbContext(blnIsAutoCloseConnection);
-        }
-
-        /// <summary>
-        /// 功能描述:设置初始化参数
-        /// 作　　者:Blog.Core
-        /// </summary>
-        /// <param name="strConnectionString">连接字符串</param>
-        /// <param name="enmDbType">数据库类型</param>
-        public static void Init(string strConnectionString, DbType enmDbType = SqlSugar.DbType.SqlServer)
-        {
-            _connectionString = strConnectionString;
-            _dbType = enmDbType;
-        }
-
-        /// <summary>
         /// 功能描述:创建一个链接配置
-        /// 作　　者:Blog.Core
+        
         /// </summary>
         /// <param name="blnIsAutoCloseConnection">是否自动关闭连接</param>
         /// <param name="blnIsShardSameThread">是否夸类事务</param>
@@ -354,7 +315,7 @@ namespace Repository.Sugar
 
         /// <summary>
         /// 功能描述:获取一个自定义的DB
-        /// 作　　者:Blog.Core
+        
         /// </summary>
         /// <param name="config">config</param>
         /// <returns>返回值</returns>
@@ -364,7 +325,7 @@ namespace Repository.Sugar
         }
         /// <summary>
         /// 功能描述:获取一个自定义的数据库处理对象
-        /// 作　　者:Blog.Core
+        
         /// </summary>
         /// <param name="sugarClient">sugarClient</param>
         /// <returns>返回值</returns>
@@ -374,7 +335,7 @@ namespace Repository.Sugar
         }
         /// <summary>
         /// 功能描述:获取一个自定义的数据库处理对象
-        /// 作　　者:Blog.Core
+        
         /// </summary>
         /// <param name="config">config</param>
         /// <returns>返回值</returns>

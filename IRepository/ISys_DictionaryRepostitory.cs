@@ -2,13 +2,11 @@
 using Project.Model.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Text;
 
 namespace IRepository
 {
-    public interface IAdvertisementRepository:IBaseRespository<AdvertisementModel>
+    public interface ISys_DictionaryRepostitory: IBaseRepository<Sys_Dictionary>
     {
-        int Sum(int i, int j);
     }
 }
