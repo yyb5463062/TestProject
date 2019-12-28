@@ -9,6 +9,11 @@
             字典操作
             </summary>
         </member>
+        <member name="T:Project.Core.Main.Controllers.WeatherForecastController">
+            <summary>
+            测试控制器
+            </summary>
+        </member>
         <member name="M:Project.Core.Main.Controllers.WeatherForecastController.Get">
             <summary>
             api 接口注释
