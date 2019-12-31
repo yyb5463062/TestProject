@@ -6,6 +6,7 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,6 +20,7 @@ namespace Project.Core.Main
     /// </summary>
     public class Startup
     {
+        //ILogger logger = LogManager.GetLogger(typeof(WebApiExceptionFilterAttribute).Name);
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
@@ -27,14 +29,18 @@ namespace Project.Core.Main
 
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment Env { get; }
-
-        public ILifetimeScope AutofacContainer { get; private set; }
+        
+        //public ILifetimeScope AutofacContainer { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddSingleton(new NLogHelper());//单纯用NLog
+
             services.AddSingleton(new AppSettingsHelper(Env.ContentRootPath));
-            services.AddControllers();
+            services.AddControllers(p=> {
+                p.Filters.Add(typeof(ExceptionFilterAttribute));//全局异常过滤记录日志
+            });
             //services.AddCors();//跨域
             //services.AddMvc();
             var ConnectionString = Configuration.GetSection("AppSettings:SqlServerConnection").Value;
@@ -191,7 +197,7 @@ namespace Project.Core.Main
             });
             #endregion
 
-            this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
+            //this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
 
             app.UseRouting();
             //app.UseMvc();

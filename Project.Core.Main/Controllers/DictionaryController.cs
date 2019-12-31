@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Project.Common.Logs;
 using Project.IService.Interface;
 
 namespace Project.Core.Main.Controllers
@@ -15,16 +17,18 @@ namespace Project.Core.Main.Controllers
     [ApiController]
     public class DictionaryController : ControllerBase
     {
-        ISys_DictionaryService _service;
-
-        public DictionaryController(ISys_DictionaryService service)
+        private readonly ISys_DictionaryService _service;
+        private readonly ILogger<DictionaryController> _logger;
+        public DictionaryController(ISys_DictionaryService service, ILogger<DictionaryController> logger)
         {
             this._service = service;
+            this._logger = logger;
         }
         // GET: api/Dictionary
         [HttpGet]
         public object Get()
         {
+            _logger.LogInformation("获取字典表记录");
             return Ok(_service.Query());
         }
 
@@ -32,6 +36,7 @@ namespace Project.Core.Main.Controllers
         [HttpGet("{id}", Name = "Get")]
         public string Get(int id)
         {
+            id=id / 0;
             return "value";
         }
 
