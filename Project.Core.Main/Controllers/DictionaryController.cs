@@ -13,7 +13,7 @@ namespace Project.Core.Main.Controllers
     /// <summary>
     /// 字典操作
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[Action]")]
     [ApiController]
     public class DictionaryController : ControllerBase
     {

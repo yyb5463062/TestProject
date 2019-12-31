@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.PlatformAbstractions;
 using Project.Common.Appsettings;
+using Project.Core.Main.Extensions;
+using Project.Core.Main.Filters;
 
 namespace Project.Core.Main
 {
@@ -36,67 +37,47 @@ namespace Project.Core.Main
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddSingleton(new NLogHelper());//单纯用NLog
-
+            //services.AddAuthenticationCore(options =>
+            //{
+            //    options.add("Client",p=>p.re);
+            //});
             services.AddSingleton(new AppSettingsHelper(Env.ContentRootPath));
             services.AddControllers(p=> {
-                p.Filters.Add(typeof(ExceptionFilterAttribute));//全局异常过滤记录日志
+                p.Filters.Add(typeof(WebApiExceptionFilterAttribute));//全局异常过滤记录日志
             });
             //services.AddCors();//跨域
             //services.AddMvc();
-            var ConnectionString = Configuration.GetSection("AppSettings:SqlServerConnection").Value;
+            //var ConnectionString = Configuration.GetSection("AppSettings:SqlServerConnection").Value;
+
+            services.AddSwaggerSetup();//添加swagger服务
             #region Swagger
 
-            services.AddSwaggerGen(p =>
-            {
-                p.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-                {
-                    Version = "V0.1.0",
-                    Title = "Project.Core API",
-                    Description = "接口说明文档",
-                    //TermsOfService = "None",
-                    //Contact = new Swashbuckle.AspNetCore.Swagger.Contact
-                    //{
-                    //    Name = "测试",
-                    //    Url = "http://www.baidu.com"
-                    //}
-                });
-                //就是这里
+            //services.AddSwaggerGen(p =>
+            //{
+            //    p.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+            //    {
+            //        Version = "V0.1.0",
+            //        Title = "Project.Core API",
+            //        Description = "接口说明文档",
+            //        //TermsOfService = "None",
+            //        //Contact = new Swashbuckle.AspNetCore.Swagger.Contact
+            //        //{
+            //        //    Name = "测试",
+            //        //    Url = "http://www.baidu.com"
+            //        //}
+            //    });
+            //    //就是这里
 
-                var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                var xmlPath = Path.Combine(basePath, "Project.Core.Main.xml");//这个就是刚刚配置的xml文件名
-                //var xmlModelPath = Path.Combine(basePath, "Blog.Core.Model.xml");//这个就是Model层的xml文件名
-                //p.IncludeXmlComments(xmlPath, true);//默认的第二个参数是false，这个是controller的注释，记得修改
-                p.IncludeXmlComments(xmlPath, true);//默认的第二个参数是false，这个是controller的注释，记得修
-            });
+            //    var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+            //    var xmlPath = Path.Combine(basePath, "Project.Core.Main.xml");//这个就是刚刚配置的xml文件名
+            //    //var xmlModelPath = Path.Combine(basePath, "Blog.Core.Model.xml");//这个就是Model层的xml文件名
+            //    //p.IncludeXmlComments(xmlPath, true);//默认的第二个参数是false，这个是controller的注释，记得修改
+            //    p.IncludeXmlComments(xmlPath, true);//默认的第二个参数是false，这个是controller的注释，记得修
+            //});
 
             #endregion
 
-            #region Token绑定到ConfigureServices
-            //添加header验证信息
-            //c.OperationFilter<SwaggerHeader>();
-            //var security = new Dictionary<string, IEnumerable<string>> { { "Blog.Core", new string[] { } }, };
-            //c.AddSecurityRequirement(security);
-            //方案名称“Blog.Core”可自定义，上下一致即可
-            //c.AddSecurityDefinition("Blog.Core", new ApiKeyScheme
-            //{
-            //    Description = "JWT授权(数据将在请求头中进行传输) 直接在下框中输入{token}\"",
-            //    Name = "Authorization",//jwt默认的参数名称
-            //    In = "header",//jwt默认存放Authorization信息的位置(请求头中)
-            //    Type = "apiKey"
-            //});
-            #endregion
 
-            #region Token服务注册
-            //services.AddSingleton<IMemoryCache>(factory =>
-            //{
-            //    var cache = new MemoryCache(new MemoryCacheOptions());
-            //    return cache;
-            //});
-            //services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy("Admin", policy => policy.RequireClaim("AdminType").Build());//注册权限管理，可以自定义多个
-            //});
-            #endregion
             services.AddOptions();
         }
 
@@ -186,6 +167,7 @@ namespace Project.Core.Main
                 // 强制实施 HTTPS 在 ASP.NET Core，配合 app.UseHttpsRedirection
                 //app.UseHsts();
             }
+
             #region Swagger
             app.UseSwagger();
             app.UseSwaggerUI(c =>
@@ -206,7 +188,11 @@ namespace Project.Core.Main
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                //endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "api/{controller=Login}/{action=GetJwtStr}/"
+                    ); 
             });
         }
     }

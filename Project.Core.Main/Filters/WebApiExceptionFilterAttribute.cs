@@ -9,8 +9,8 @@ namespace Project.Core.Main.Filters
 {
     public class WebApiExceptionFilterAttribute : ExceptionFilterAttribute
     {
-        private readonly ILogger _logger;
-        public WebApiExceptionFilterAttribute(ILogger logger)
+        private readonly ILogger<WebApiExceptionFilterAttribute> _logger;
+        public WebApiExceptionFilterAttribute(ILogger<WebApiExceptionFilterAttribute> logger)
         {
             _logger = logger;
         }
