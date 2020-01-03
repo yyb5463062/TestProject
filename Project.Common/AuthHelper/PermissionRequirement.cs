@@ -2,10 +2,9 @@
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace Project.Core.Main.Models.AuthHelper
+namespace Project.Common.AuthHelper
 {
     /// <summary>
     /// 必要参数类，类似一个订单信息
@@ -18,7 +17,7 @@ namespace Project.Core.Main.Models.AuthHelper
         /// 用户权限集合，一个订单包含了很多详情，
         /// 同理，一个网站的认证发行中，也有很多权限详情(这里是Role和URL的关系)
         /// </summary>
-        public List<PermissionItem> Permissions { get; set; }
+        public List<Permissions> Permissions { get; set; }
         /// <summary>
         /// 无权限action
         /// </summary>
@@ -60,7 +59,7 @@ namespace Project.Core.Main.Models.AuthHelper
         /// <param name="audience">订阅人</param>
         /// <param name="signingCredentials">签名验证实体</param>
         /// <param name="expiration">过期时间</param>
-        public PermissionRequirement(string deniedAction, List<PermissionItem> permissions, string claimType, string issuer, string audience, SigningCredentials signingCredentials, TimeSpan expiration)
+        public PermissionRequirement(string deniedAction, List<Permissions> permissions, string claimType, string issuer, string audience, SigningCredentials signingCredentials, TimeSpan expiration)
         {
             ClaimType = claimType;
             DeniedAction = deniedAction;

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace Project.Core.Main.Models.AuthHelper
+namespace Project.Common.AuthHelper
 {
     /// <summary>
     /// 用户或角色或其他凭据实体,就像是订单详情一样
@@ -14,10 +13,14 @@ namespace Project.Core.Main.Models.AuthHelper
         /// <summary>
         /// 用户或角色或其他凭据名称
         /// </summary>
-        public virtual string Role { get; set; }
+        public string Role { get; set; }
         /// <summary>
         /// 请求Url
         /// </summary>
-        public virtual string Url { get; set; }
+        public string Url { get; set; }
+        /// <summary>
+        /// 用户名
+        /// </summary>
+        public string Name { get; set; }
     }
 }

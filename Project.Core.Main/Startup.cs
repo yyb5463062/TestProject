@@ -45,15 +45,14 @@ namespace Project.Core.Main
             services.AddControllers(p=> {
                 p.Filters.Add(typeof(WebApiExceptionFilterAttribute));//全局异常过滤记录日志
             });
-            //services.AddCors();//跨域
-            //services.AddMvc();
+
+            services.AddCors(options => options.AddPolicy("any", builder => builder.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin().AllowCredentials()));//跨域
+
             //var ConnectionString = Configuration.GetSection("AppSettings:SqlServerConnection").Value;
 
             services.AddSwaggerSetup();//添加swagger服务
 
             services.AddAuthorizationSetup();//添加权限认证
-
-            services.AddOptions();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)

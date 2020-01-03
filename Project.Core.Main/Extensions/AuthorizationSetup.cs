@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Project.Common.Appsettings;
-using Project.Core.Main.Models.AuthHelper;
+using Project.Common.AuthHelper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -93,7 +93,7 @@ namespace Project.Core.Main.Extensions
             var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
             // 如果要数据库动态绑定，这里先留个空，后边处理器里动态赋值
-            var permission = new List<PermissionItem>();
+            var permission = new List<Permissions>();
 
             // 角色与接口的权限要求参数
             var permissionRequirement = new PermissionRequirement(
@@ -103,14 +103,14 @@ namespace Project.Core.Main.Extensions
                 Issuer,//发行人
                 Audience,//听众
                 signingCredentials,//签名凭据
-                expiration: TimeSpan.FromSeconds(60 * 60)//接口的过期时间
+                expiration: TimeSpan.FromSeconds(10)//接口的过期时间 60 * 60
                 );
             #endregion
 
             // 3、复杂的策略授权
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(Permissions.Name,
+                options.AddPolicy("Permission",//Permissions.Name,
                          policy => policy.Requirements.Add(permissionRequirement));
             });
 
@@ -130,7 +130,8 @@ namespace Project.Core.Main.Extensions
 
             //2.1【认证】、core自带官方JWT认证
             // 开启Bearer认证
-            services.AddAuthentication(o => {
+            services.AddAuthentication(o =>
+            {
                 o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                 o.DefaultChallengeScheme = nameof(AuthenticationHandler<AuthenticationSchemeOptions>);
                 o.DefaultForbidScheme = nameof(AuthenticationHandler<AuthenticationSchemeOptions>);
@@ -138,15 +139,25 @@ namespace Project.Core.Main.Extensions
              // 添加JwtBearer服务
              .AddJwtBearer(o =>
              {
+                 //不使用https
+                 o.RequireHttpsMetadata = false;
                  o.TokenValidationParameters = tokenValidationParameters;
                  o.Events = new JwtBearerEvents
                  {
-                     OnAuthenticationFailed = context =>
+                     //OnAuthenticationFailed = context =>
+                     //{
+                     //    // 如果过期，则把<是否过期>添加到，返回头信息中
+                     //    if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                     //    {
+                     //        context.Response.Headers.Add("Token-Expired", "true");
+                     //    }
+                     //    return Task.CompletedTask;
+                     //}
+                     OnTokenValidated = context =>
                      {
-                         // 如果过期，则把<是否过期>添加到，返回头信息中
-                         if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                         if (context.Request.Path.Value.ToString() == "/api/logout")
                          {
-                             context.Response.Headers.Add("Token-Expired", "true");
+                             var token = ((context as TokenValidatedContext).SecurityToken as JwtSecurityToken).RawData;
                          }
                          return Task.CompletedTask;
                      }
@@ -167,7 +178,7 @@ namespace Project.Core.Main.Extensions
 
 
             // 注入权限处理器
-            services.AddSingleton<IAuthorizationHandler, AuthorizationHandler<PermissionRequirement>>();
+            services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
             services.AddSingleton(permissionRequirement);
         }
     }

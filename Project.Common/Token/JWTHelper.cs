@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Project.Common.Appsettings;
+using Project.Common.AuthHelper;
 using Project.Common.DataConvert;
 using System;
 using System.Collections.Generic;
@@ -80,6 +81,33 @@ namespace Project.Common.Token
                 Role = role != null ? role.ObjToString() : "",
             };
             return tm;
+        }
+
+        /// <summary>
+        /// 获取基于JWT的Token
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public static dynamic BuildJwtToken(Claim[] claims, PermissionRequirement permissionRequirement)
+        {
+            var now = DateTime.UtcNow;
+            var jwt = new JwtSecurityToken(
+                issuer: permissionRequirement.Issuer,
+                audience: permissionRequirement.Audience,
+                claims: claims,
+                notBefore: now,
+                expires: now.Add(permissionRequirement.Expiration),
+                signingCredentials: permissionRequirement.SigningCredentials
+            );
+            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+            var response = new
+            {
+                Status = true,
+                access_token = encodedJwt,
+                expires_in = permissionRequirement.Expiration.TotalMilliseconds,
+                token_type = "Bearer"
+            };
+            return response;
         }
     }
 
