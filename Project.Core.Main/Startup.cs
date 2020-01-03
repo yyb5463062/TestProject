@@ -50,33 +50,8 @@ namespace Project.Core.Main
             //var ConnectionString = Configuration.GetSection("AppSettings:SqlServerConnection").Value;
 
             services.AddSwaggerSetup();//添加swagger服务
-            #region Swagger
 
-            //services.AddSwaggerGen(p =>
-            //{
-            //    p.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-            //    {
-            //        Version = "V0.1.0",
-            //        Title = "Project.Core API",
-            //        Description = "接口说明文档",
-            //        //TermsOfService = "None",
-            //        //Contact = new Swashbuckle.AspNetCore.Swagger.Contact
-            //        //{
-            //        //    Name = "测试",
-            //        //    Url = "http://www.baidu.com"
-            //        //}
-            //    });
-            //    //就是这里
-
-            //    var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-            //    var xmlPath = Path.Combine(basePath, "Project.Core.Main.xml");//这个就是刚刚配置的xml文件名
-            //    //var xmlModelPath = Path.Combine(basePath, "Blog.Core.Model.xml");//这个就是Model层的xml文件名
-            //    //p.IncludeXmlComments(xmlPath, true);//默认的第二个参数是false，这个是controller的注释，记得修改
-            //    p.IncludeXmlComments(xmlPath, true);//默认的第二个参数是false，这个是controller的注释，记得修
-            //});
-
-            #endregion
-
+            services.AddAuthorizationSetup();//添加权限认证
 
             services.AddOptions();
         }
@@ -184,6 +159,9 @@ namespace Project.Core.Main
             app.UseRouting();
             //app.UseMvc();
 
+            // 先开启认证
+            app.UseAuthentication();
+            // 然后是授权中间件
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

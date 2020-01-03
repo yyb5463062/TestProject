@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Project.Common.Logs;
+using Project.Common.Token;
 using Project.IService.Interface;
 
 namespace Project.Core.Main.Controllers
@@ -26,10 +27,14 @@ namespace Project.Core.Main.Controllers
         }
         // GET: api/Dictionary
         [HttpGet]
-        public object Get()
+        public object Get(string token)
         {
-            _logger.LogInformation("获取字典表记录");
-            return Ok(_service.Query());
+            if(!string.IsNullOrEmpty(token)&&token==TokenHelper.token)
+            {
+                _logger.LogInformation("获取字典表记录");
+                return Ok(_service.Query());
+            }
+            return Ok("验证失败!");
         }
 
         // GET: api/Dictionary/5

@@ -24,6 +24,9 @@ namespace Project.Core.Main.Extensions
             var ApiName = AppSettingsHelper.app(new string[] { "Startup", "ApiName" });
             var Version = AppSettingsHelper.app(new string[] { "Startup", "Version" });
 
+            var ApiXML = AppSettingsHelper.app(new string[] { "Swagger", "ApiXML" });
+            var ModelXML = AppSettingsHelper.app(new string[] { "Swagger", "ModelXML" });
+
             services.AddSwaggerGen(c =>
             {
                 //遍历出全部的版本，做文档信息展示
@@ -34,8 +37,8 @@ namespace Project.Core.Main.Extensions
                         Version = Version,
                         Title = $"{ApiName} 接口文档——Netcore 3.1",
                         Description = $"{ApiName} HTTP API " + Version,
-                        Contact = new OpenApiContact { Name = ApiName, Email = "222222222222@xxx.com", Url = new Uri("https://www.baidu.com/") },
-                        License = new OpenApiLicense { Name = ApiName, Url = new Uri("https://www.baidu.com/") }
+                        //Contact = new OpenApiContact { Name = ApiName, Email = "222222222222@xxx.com", Url = new Uri("https://www.baidu.com/") },
+                        //License = new OpenApiLicense { Name = ApiName, Url = new Uri("https://www.baidu.com/") }
                     });
                     c.OrderActionsBy(o => o.RelativePath);
                 //});
@@ -44,11 +47,30 @@ namespace Project.Core.Main.Extensions
                 try
                 {
                     //就是这里
-                    var xmlPath = Path.Combine(basePath, "Project.Core.Main.xml");//这个就是刚刚配置的xml文件名
+                    var xmlPath = Path.Combine(basePath, ApiXML);//这个就是刚刚配置的xml文件名
                     c.IncludeXmlComments(xmlPath, true);//默认的第二个参数是false，这个是controller的注释，记得修改
 
-                    var xmlModelPath = Path.Combine(basePath, "Project.Model.xml");//这个就是Model层的xml文件名
+                    var xmlModelPath = Path.Combine(basePath, ModelXML);//这个就是Model层的xml文件名
                     c.IncludeXmlComments(xmlModelPath);
+
+                    #region Token绑定到ConfigureServices
+                    // 添加Header验证消息
+                    // c.OperationFilter<SwaggerHeader>();
+                    //var security = new Dictionary<string, IEnumerable<string>> { { "Blog.Core", new string[] { } }, };
+                    //var security = new OpenApiSecurityRequirement();
+                    //OpenApiSecurityScheme key = new OpenApiSecurityScheme();
+                    //key.BearerFormat = ApiName;
+                    //security.Add(key, new List<string>());
+                    //c.AddSecurityRequirement(security);
+                    //// 方案名称“Blog.Core”可自定义，上下一致即可
+                    //c.AddSecurityDefinition("Blog.Core", new ApiKeyScheme
+                    //{
+                    //    Description = "JWT授权(数据将在请求头中进行传输) 直接在下框中输入Bearer {token}（注意两者之间是一个空格）\"",
+                    //    Name = "Authorization", // jwt默认的参数名称
+                    //    In = "header", // jwt默认存放Authorization信息的位置(请求头中)
+                    //    Type = "apiKey"
+                    //});
+                    #endregion
                 }
                 catch (Exception ex)
                 {

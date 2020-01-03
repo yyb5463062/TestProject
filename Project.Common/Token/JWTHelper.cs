@@ -15,6 +15,11 @@ namespace Project.Common.Token
     /// </summary>
     public class JWTHelper
     {
+        /// <summary>
+        /// 生产token
+        /// </summary>
+        /// <param name="tokenModel"></param>
+        /// <returns></returns>
         public static string IssueJwt(TokenModelJwt tokenModel)
         {
             string iss = AppSettingsHelper.app(new string[] { "Audience", "Issuer" });
@@ -51,7 +56,7 @@ namespace Project.Common.Token
         }
 
         /// <summary>
-        /// 解析
+        /// 解析token
         /// </summary>
         /// <param name="jwtStr"></param>
         /// <returns></returns>
