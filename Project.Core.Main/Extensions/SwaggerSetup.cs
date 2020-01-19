@@ -32,15 +32,15 @@ namespace Project.Core.Main.Extensions
                 //遍历出全部的版本，做文档信息展示
                 //typeof(ApiVersions).GetEnumNames().ToList().ForEach(version =>
                 //{
-                    c.SwaggerDoc("v1",new OpenApiInfo
-                    {
-                        Version = Version,
-                        Title = $"{ApiName} 接口文档——Netcore 3.1",
-                        Description = $"{ApiName} HTTP API " + Version,
-                        //Contact = new OpenApiContact { Name = ApiName, Email = "222222222222@xxx.com", Url = new Uri("https://www.baidu.com/") },
-                        //License = new OpenApiLicense { Name = ApiName, Url = new Uri("https://www.baidu.com/") }
-                    });
-                    c.OrderActionsBy(o => o.RelativePath);
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = Version,
+                    Title = $"{ApiName} 接口文档——Netcore 3.1",
+                    Description = $"{ApiName} HTTP API " + Version,
+                    //Contact = new OpenApiContact { Name = ApiName, Email = "222222222222@xxx.com", Url = new Uri("https://www.baidu.com/") },
+                    //License = new OpenApiLicense { Name = ApiName, Url = new Uri("https://www.baidu.com/") }
+                });
+                c.OrderActionsBy(o => o.RelativePath);
                 //});
 
 
@@ -82,14 +82,29 @@ namespace Project.Core.Main.Extensions
 
                 c.OperationFilter<SecurityRequirementsOperationFilter>();
 
-
-                // Token绑定到ConfigureServices
-                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                //jwt token
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
-                    Description = "JWT授权(数据将在请求头中进行传输) 直接在下框中输入Bearer {token}（注意两者之间是一个空格）\"",
-                    Name = "Authorization",//jwt默认的参数名称
-                    In = ParameterLocation.Header,//jwt默认存放Authorization信息的位置(请求头中)
-                    Type = SecuritySchemeType.ApiKey
+                    Description = "在下框中输入请求头中需要添加Jwt授权Token：Bearer Token",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] { }
+                    }
                 });
             });
         }

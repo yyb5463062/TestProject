@@ -13,7 +13,15 @@ namespace Project.Common.Token
         /// 记录token
         /// </summary>
         public static string token { get; set; }
-
+        /// <summary>
+        /// token生成日期
+        /// </summary>
+        public static DateTime DateTimeNow { get; set; }
+        /// <summary>
+        /// 获取token
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="Role"></param>
         public static void GetJwtStr(string userName, string Role)
         {
             string jwtStr = string.Empty;
@@ -29,12 +37,30 @@ namespace Project.Common.Token
                 suc = true;
             }
             token = jwtStr;
+            DateTimeNow = DateTime.Now;
         }
-
+        /// <summary>
+        /// 刷新token
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="Role"></param>
         public static void RefreshToken(string userName,string Role)
         {
             GetJwtStr(userName,Role);
         }
-        
+        /// <summary>
+        /// 验证token
+        /// </summary>
+        /// <param name="jwt"></param>
+        /// <returns></returns>
+        public static bool IsToken(string jwt)
+        {
+            if ((DateTime.Now-DateTimeNow)>TimeSpan.FromMinutes(1))
+                GetJwtStr("", "");
+            if (token == jwt)
+                return true;
+            else
+                return false;
+        }
     }
 }

@@ -29,7 +29,7 @@ namespace Project.Core.Main.Controllers
         [HttpGet]
         public object Get(string token)
         {
-            if(!string.IsNullOrEmpty(token)&&token==TokenHelper.token)
+            if(TokenHelper.IsToken(token))
             {
                 _logger.LogInformation("获取字典表记录");
                 return Ok(_service.Query());
