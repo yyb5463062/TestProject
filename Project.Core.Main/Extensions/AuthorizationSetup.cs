@@ -1,13 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Project.Common.Appsettings;
 using Project.Common.AuthHelper;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -142,28 +140,29 @@ namespace Project.Core.Main.Extensions
                  //不使用https
                  o.RequireHttpsMetadata = false;
                  o.TokenValidationParameters = tokenValidationParameters;
+
                  o.Events = new JwtBearerEvents
                  {
-                     //OnAuthenticationFailed = context =>
+                     OnAuthenticationFailed = context =>
+                     {
+                         // 如果过期，则把<是否过期>添加到，返回头信息中
+                         if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                         {
+                             context.Response.Headers.Add("Token-Expired", "true");
+                         }
+                         return Task.CompletedTask;
+                     }//,
+                     //OnTokenValidated = context =>
                      //{
-                     //    // 如果过期，则把<是否过期>添加到，返回头信息中
-                     //    if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                     //    if (context.Request.Path.Value.ToString() == "/api/logout")
                      //    {
-                     //        context.Response.Headers.Add("Token-Expired", "true");
+                     //        var token = ((context as TokenValidatedContext).SecurityToken as JwtSecurityToken).RawData;
                      //    }
                      //    return Task.CompletedTask;
                      //}
-                     OnTokenValidated = context =>
-                     {
-                         if (context.Request.Path.Value.ToString() == "/api/logout")
-                         {
-                             var token = ((context as TokenValidatedContext).SecurityToken as JwtSecurityToken).RawData;
-                         }
-                         return Task.CompletedTask;
-                     }
                  };
-             })
-             .AddScheme<AuthenticationSchemeOptions, AuthenticationHandler<AuthenticationSchemeOptions>>(nameof(AuthenticationHandler<AuthenticationSchemeOptions>), o => { });
+             });
+             //.AddScheme<AuthenticationSchemeOptions, AuthenticationHandler<AuthenticationSchemeOptions>>(nameof(AuthenticationHandler<AuthenticationSchemeOptions>), o => { });
 
 
             //2.2【认证】、IdentityServer4 认证 (暂时忽略)
@@ -178,8 +177,8 @@ namespace Project.Core.Main.Extensions
 
 
             // 注入权限处理器
-            services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
-            services.AddSingleton(permissionRequirement);
+            //services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+            //services.AddSingleton(permissionRequirement);
         }
     }
 }

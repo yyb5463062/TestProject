@@ -69,9 +69,11 @@ namespace Project.Common.Token
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var jwt = new JwtSecurityToken(
-                issuer: iss,
-                claims: claims,
-                signingCredentials: creds);
+                issuer: iss,//颁发者
+                claims: claims,//自定义参数
+                signingCredentials: creds,//签名证书
+                expires: DateTime.Now.AddSeconds(30)//过期时间
+                );
             var jwtHandler = new JwtSecurityTokenHandler();
             var encodedJwt = jwtHandler.WriteToken(jwt);
             return encodedJwt;

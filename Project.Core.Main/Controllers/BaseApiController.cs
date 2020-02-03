@@ -10,7 +10,7 @@ namespace Project.Core.Main.Controllers
 {
     [Route("api/[controller]/[Action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class BaseApiController : ControllerBase
     {
     }
