@@ -70,13 +70,13 @@ namespace Project.Core.Main.Extensions
 
             // 1【授权】、这个和上边的异曲同工，好处就是不用在controller中，写多个 roles 。
             // 然后这么写 [Authorize(Policy = "Admin")]
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Client", policy => policy.RequireRole("Client").Build());
-                options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
-                options.AddPolicy("SystemOrAdmin", policy => policy.RequireRole("Admin", "System"));
-                options.AddPolicy("A_S_O", policy => policy.RequireRole("Admin", "System", "Others"));
-            });
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("Client", policy => policy.RequireRole("Client").Build());
+            //    options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
+            //    options.AddPolicy("SystemOrAdmin", policy => policy.RequireRole("Admin", "System"));
+            //    options.AddPolicy("A_S_O", policy => policy.RequireRole("Admin", "System", "Others"));
+            //});
 
 
             #endregion
@@ -123,7 +123,7 @@ namespace Project.Core.Main.Extensions
                 ValidIssuer = Issuer,//发行人
                 ValidateAudience = true,
                 ValidAudience = Audience,//订阅人
-                ValidateLifetime = true,
+                ValidateLifetime = true,//是否验证失效时间
                 ClockSkew = TimeSpan.FromSeconds(30),
                 RequireExpirationTime = true,
             };

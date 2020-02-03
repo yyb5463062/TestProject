@@ -82,7 +82,7 @@ namespace Project.Common.Token
         /// </summary>
         /// <param name="jwtStr"></param>
         /// <returns></returns>
-        public static TokenModelJwt SerilaizeJwt(string jwtStr)
+        public static TokenModelJwt SerializeJwt(string jwtStr)
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             JwtSecurityToken jwtToken = new JwtSecurityToken(jwtStr);
@@ -109,27 +109,27 @@ namespace Project.Common.Token
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        public static dynamic BuildJwtToken(Claim[] claims, PermissionRequirement permissionRequirement)
-        {
-            var now = DateTime.UtcNow;
-            var jwt = new JwtSecurityToken(
-                issuer: permissionRequirement.Issuer,
-                audience: permissionRequirement.Audience,
-                claims: claims,
-                notBefore: now,
-                expires: now.Add(permissionRequirement.Expiration),
-                signingCredentials: permissionRequirement.SigningCredentials
-            );
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-            var response = new
-            {
-                Status = true,
-                access_token = encodedJwt,
-                expires_in = permissionRequirement.Expiration.TotalMilliseconds,
-                token_type = "Bearer"
-            };
-            return response;
-        }
+        //public static dynamic BuildJwtToken(Claim[] claims, PermissionRequirement permissionRequirement)
+        //{
+        //    var now = DateTime.UtcNow;
+        //    var jwt = new JwtSecurityToken(
+        //        issuer: permissionRequirement.Issuer,
+        //        audience: permissionRequirement.Audience,
+        //        claims: claims,
+        //        notBefore: now,
+        //        expires: now.Add(permissionRequirement.Expiration),
+        //        signingCredentials: permissionRequirement.SigningCredentials
+        //    );
+        //    var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+        //    var response = new
+        //    {
+        //        Status = true,
+        //        access_token = encodedJwt,
+        //        expires_in = permissionRequirement.Expiration.TotalMilliseconds,
+        //        token_type = "Bearer"
+        //    };
+        //    return response;
+        //}
     }
 
     /// <summary>
