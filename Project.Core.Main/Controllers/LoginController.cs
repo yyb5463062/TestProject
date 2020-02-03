@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Project.Common.Token;
 
 namespace Project.Core.Main.Controllers
@@ -14,9 +15,15 @@ namespace Project.Core.Main.Controllers
     /// </summary>
     [Route("api/[controller]/[Action]")]
     [ApiController]
-    [Authorize]
-    public class LoginController : ControllerBase
+    //[Authorize]
+    public class LoginController : BaseApiController
     {
+        private readonly ILogger<LoginController> _logger;
+
+        public LoginController(ILogger<LoginController> logger)
+        {
+            this._logger = logger;
+        }
         /// <summary>
         /// 登陆
         /// </summary>
@@ -27,8 +34,8 @@ namespace Project.Core.Main.Controllers
         [AllowAnonymous]
         public IActionResult GetJwtStr(string name, string pass)
         {
-            TokenHelper.GetJwtStr(name, pass);
-            return Ok(TokenHelper.token);
+            var token = JWTHelper.GetJwtStr(name, pass);
+            return Ok(token);
         }
         // GET: api/Login
         [HttpGet]

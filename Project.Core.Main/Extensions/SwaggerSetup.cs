@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Project.Common.Appsettings;
 using Swashbuckle.AspNetCore.Filters;
@@ -72,7 +73,7 @@ namespace Project.Core.Main.Extensions
                     //});
                     #endregion
                 }
-                catch (Exception ex)
+                catch //(Exception ex)
                 {
                     //log.Error("Blog.Core.xml和Blog.Core.Model.xml 丢失，请检查并拷贝。\n" + ex.Message);
                 }

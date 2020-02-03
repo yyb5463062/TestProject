@@ -1,10 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Project.Common.Appsettings
 {
@@ -29,7 +25,7 @@ namespace Project.Common.Appsettings
         //        })
         //        .Build();// 这样的话，可以直接读目录里的json文件，而不是 bin 文件夹下的，所以不用修改复制属性
         //}
-            
+
         public AppSettingsHelper(string contentPath)
         {
             string Path = "appsettings.json";
@@ -53,9 +49,9 @@ namespace Project.Common.Appsettings
                     return Configuration[string.Join(":", sections)];
                 }
             }
-            catch(Exception ex)
+            catch
             {
-
+                
             }
             return "";
         }

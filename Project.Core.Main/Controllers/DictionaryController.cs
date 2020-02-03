@@ -16,7 +16,7 @@ namespace Project.Core.Main.Controllers
     /// </summary>
     [Route("api/[controller]/[Action]")]
     [ApiController]
-    public class DictionaryController : ControllerBase
+    public class DictionaryController : BaseApiController
     {
         private readonly ISys_DictionaryService _service;
         private readonly ILogger<DictionaryController> _logger;
@@ -29,19 +29,16 @@ namespace Project.Core.Main.Controllers
         [HttpGet]
         public object Get(string token)
         {
-            if(TokenHelper.IsToken(token))
-            {
-                _logger.LogInformation("获取字典表记录");
-                return Ok(_service.Query());
-            }
-            return Ok("验证失败!");
+            _logger.LogInformation("获取字典表记录");
+            return Ok(_service.Query());
+            //return Ok("验证失败!");
         }
 
         // GET: api/Dictionary/5
         [HttpGet("{id}", Name = "Get")]
         public string Get(int id)
         {
-            id=id / 0;
+            //id = id / 0;
             return "value";
         }
 

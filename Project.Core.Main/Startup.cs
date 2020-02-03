@@ -42,8 +42,9 @@ namespace Project.Core.Main
             //    options.add("Client",p=>p.re);
             //});
             services.AddSingleton(new AppSettingsHelper(Env.ContentRootPath));
-            services.AddControllers(p=> {
-                p.Filters.Add(typeof(WebApiExceptionFilterAttribute));//全局异常过滤记录日志
+            services.AddControllers(p =>
+            {
+                //p.Filters.Add(typeof(WebApiExceptionFilterAttribute));//全局异常过滤记录日志
             });
 
             services.AddCors(options => options.AddPolicy("any", builder => builder.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin().AllowCredentials()));//跨域
@@ -109,7 +110,7 @@ namespace Project.Core.Main
                 builder.RegisterAssemblyTypes(assemblysRepository).AsImplementedInterfaces();
                 #endregion
             }
-            catch (Exception ex)
+            catch //(Exception ex)
             {
                 //log.Error("Repository.dll和service.dll 丢失，因为项目解耦了，所以需要先F6编译，再F5运行，请检查并拷贝。\n" + ex.Message);
 
