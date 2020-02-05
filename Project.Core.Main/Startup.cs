@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.PlatformAbstractions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Project.Common.Appsettings;
 using Project.Core.Main.Extensions;
 using Project.Core.Main.Filters;
@@ -21,7 +23,6 @@ namespace Project.Core.Main
     /// </summary>
     public class Startup
     {
-        //ILogger logger = LogManager.GetLogger(typeof(WebApiExceptionFilterAttribute).Name);
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
@@ -30,30 +31,34 @@ namespace Project.Core.Main
 
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment Env { get; }
-        
-        //public ILifetimeScope AutofacContainer { get; private set; }
+       
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddSingleton(new NLogHelper());//单纯用NLog
-            //services.AddAuthenticationCore(options =>
-            //{
-            //    options.add("Client",p=>p.re);
-            //});
             services.AddSingleton(new AppSettingsHelper(Env.ContentRootPath));
-            services.AddControllers(p =>
-            {
-                //p.Filters.Add(typeof(WebApiExceptionFilterAttribute));//全局异常过滤记录日志
-            });
-
+            
             services.AddCors(options => options.AddPolicy("any", builder => builder.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin().AllowCredentials()));//跨域
-
-            //var ConnectionString = Configuration.GetSection("AppSettings:SqlServerConnection").Value;
 
             services.AddSwaggerSetup();//添加swagger服务
 
             services.AddAuthorizationSetup();//添加权限认证
+
+            services.AddControllers(p =>
+            {
+                //p.Filters.Add(typeof(WebApiExceptionFilterAttribute));//全局异常过滤记录日志
+            })
+            //全局配置Json序列化处理
+            .AddNewtonsoftJson(options =>
+            {
+                //忽略循环引用
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                //不使用驼峰样式的key
+                options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                //设置时间格式
+                //options.SerializerSettings.DateFormatString = "yyyy-MM-dd";
+            });
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -127,6 +132,8 @@ namespace Project.Core.Main
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        //配置中间件，中间件组成管道
+        //中间件就是处理http请i求和相应的
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //判断是否开发环境
@@ -154,16 +161,24 @@ namespace Project.Core.Main
             });
             #endregion
 
-            //this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
-
+            //跨域
+            app.UseCors("LimitRequests");
+            //使用静态文件
+            app.UseStaticFiles();
+            // 使用cookie
+            app.UseCookiePolicy();
+            // 返回错误码
+            app.UseStatusCodePages();//把错误码返回前台，比如是404
+            //路由中间件
             app.UseRouting();
-            //app.UseMvc();
-
             // 先开启认证
             app.UseAuthentication();
             // 然后是授权中间件
             app.UseAuthorization();
+            //
+            //app.UseMiniProfiler();
 
+            //终结点中间件和路由中间件配套使用
             app.UseEndpoints(endpoints =>
             {
                 //endpoints.MapControllers();

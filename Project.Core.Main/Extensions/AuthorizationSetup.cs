@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Project.Common.Appsettings;
@@ -161,8 +162,8 @@ namespace Project.Core.Main.Extensions
                      //    return Task.CompletedTask;
                      //}
                  };
-             });
-             //.AddScheme<AuthenticationSchemeOptions, AuthenticationHandler<AuthenticationSchemeOptions>>(nameof(AuthenticationHandler<AuthenticationSchemeOptions>), o => { });
+             })
+             .AddScheme<AuthenticationSchemeOptions, AuthenticationHandler<AuthenticationSchemeOptions>>(nameof(AuthenticationHandler<AuthenticationSchemeOptions>), o => { });
 
 
             //2.2【认证】、IdentityServer4 认证 (暂时忽略)
@@ -177,8 +178,8 @@ namespace Project.Core.Main.Extensions
 
 
             // 注入权限处理器
-            //services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
-            //services.AddSingleton(permissionRequirement);
+            services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
+            services.AddSingleton(permissionRequirement);
         }
     }
 }
