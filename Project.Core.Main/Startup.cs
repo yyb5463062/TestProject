@@ -38,7 +38,9 @@ namespace Project.Core.Main
         {
             //services.AddSingleton(new NLogHelper());//单纯用NLog
             services.AddSingleton(new AppSettingsHelper(Env.ContentRootPath));
-            
+
+            services.AddMemoryCacheSetup();//3.X之后如果只用AddControllers则必须加(不再集成在里面)，如果用AddMvc则可省
+
             services.AddCors(options => options.AddPolicy("any", builder => builder.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin().AllowCredentials()));//跨域
 
             services.AddSwaggerSetup();//添加swagger服务

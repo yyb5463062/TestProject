@@ -58,7 +58,7 @@ namespace Project.Common.Token
                  new Claim(JwtRegisteredClaimNames.Iat,$"{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}"),
                  new Claim(JwtRegisteredClaimNames.Nbf,$"{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}") ,
                  // 这个就是过期时间，目前是过期1000秒，可自定义，注意JWT有自己的缓冲过期时间
-                 new Claim (JwtRegisteredClaimNames.Exp,$"{new DateTimeOffset(DateTime.Now.AddSeconds(1000)).ToUnixTimeSeconds()}"),
+                 new Claim (JwtRegisteredClaimNames.Exp,$"{new DateTimeOffset(DateTime.Now.AddSeconds(60*30)).ToUnixTimeSeconds()}"),
                  new Claim(JwtRegisteredClaimNames.Iss,iss),
                  new Claim(JwtRegisteredClaimNames.Aud,aud),
             };
@@ -70,9 +70,11 @@ namespace Project.Common.Token
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var jwt = new JwtSecurityToken(
                 issuer: iss,//颁发者
+                audience:$"{tokenModel.UserName+tokenModel.Uid+DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 claims: claims,//自定义参数
-                signingCredentials: creds,//签名证书
-                expires: DateTime.Now.AddSeconds(30)//过期时间
+                notBefore:DateTime.UtcNow,
+                expires: DateTime.Now.AddSeconds(30),//过期时间
+                signingCredentials: creds//签名证书
                 );
             var jwtHandler = new JwtSecurityTokenHandler();
             var encodedJwt = jwtHandler.WriteToken(jwt);
@@ -84,7 +86,7 @@ namespace Project.Common.Token
         /// </summary>
         /// <param name="jwtStr"></param>
         /// <returns></returns>
-        public static TokenModelJwt SerializeJwt(string jwtStr)
+        public static TokenModelJwt DeSerializeJwt(string jwtStr)
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             JwtSecurityToken jwtToken = new JwtSecurityToken(jwtStr);
@@ -106,32 +108,6 @@ namespace Project.Common.Token
             return tm;
         }
 
-        /// <summary>
-        /// 获取基于JWT的Token
-        /// </summary>
-        /// <param name="username"></param>
-        /// <returns></returns>
-        //public static dynamic BuildJwtToken(Claim[] claims, PermissionRequirement permissionRequirement)
-        //{
-        //    var now = DateTime.UtcNow;
-        //    var jwt = new JwtSecurityToken(
-        //        issuer: permissionRequirement.Issuer,
-        //        audience: permissionRequirement.Audience,
-        //        claims: claims,
-        //        notBefore: now,
-        //        expires: now.Add(permissionRequirement.Expiration),
-        //        signingCredentials: permissionRequirement.SigningCredentials
-        //    );
-        //    var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-        //    var response = new
-        //    {
-        //        Status = true,
-        //        access_token = encodedJwt,
-        //        expires_in = permissionRequirement.Expiration.TotalMilliseconds,
-        //        token_type = "Bearer"
-        //    };
-        //    return response;
-        //}
     }
 
     /// <summary>
