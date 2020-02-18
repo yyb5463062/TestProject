@@ -41,7 +41,19 @@ namespace Project.Core.Main
 
             services.AddMemoryCacheSetup();//3.X之后如果只用AddControllers则必须加(不再集成在里面)，如果用AddMvc则可省
 
-            services.AddCors(options => options.AddPolicy("any", builder => builder.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin().AllowCredentials()));//跨域
+            //services.AddCors(options => options.AddPolicy("any", builder => builder.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin().AllowCredentials()));//跨域
+            services.AddCors(c =>
+            {
+                c.AddPolicy("LimitRequests", policy =>
+                {
+                    // 支持多个域名端口，注意端口号后不要带/斜杆：比如localhost:8000/，是错的
+                    // 注意，http://127.0.0.1:1818 和 http://localhost:1818 是不一样的，尽量写两个
+                    policy
+                    .WithOrigins(AppSettingsHelper.app(new string[] { "Startup", "Cors", "IPs" }).Split(','))
+                    .AllowAnyHeader()//Ensures that the policy allows any header.
+                    .AllowAnyMethod();
+                });
+            });
 
             services.AddSwaggerSetup();//添加swagger服务
 
@@ -65,7 +77,7 @@ namespace Project.Core.Main
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            builder.RegisterType<ControllerBase>().PropertiesAutowired();
+            //builder.RegisterType<ControllerBase>().PropertiesAutowired();
             //var basePath = Microsoft.DotNet.PlatformAbstractions.ApplicationEnvironment.ApplicationBasePath;
             var basePath = PlatformServices.Default.Application.ApplicationBasePath;
            // builder.(Assembly.GetExecutingAssembly()).PropertiesAutowired();

@@ -63,7 +63,7 @@ namespace Project.Common.Token
                 if (tokenHeader.Length >= 128)
                 {
                     //Console.WriteLine($"{DateTime.Now} token :{tokenHeader}");
-                    TokenModelJwt tm = JWTHelper.SerializeJwt(tokenHeader);
+                    TokenModelJwt tm = JWTHelper.DeSerializeJwt(tokenHeader);
 
                     //授权
                     //var claimList = new List<Claim>();
