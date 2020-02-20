@@ -40,21 +40,31 @@ namespace Project.Core.Main
             services.AddSingleton(new AppSettingsHelper(Env.ContentRootPath));
 
             services.AddMemoryCacheSetup();//3.X之后如果只用AddControllers则必须加(不再集成在里面)，如果用AddMvc则可省
+            #region 跨域
+            //services.AddCors(options => options.AddPolicy("any", builder => builder.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin()));//跨域.AllowCredentials()
 
-            //services.AddCors(options => options.AddPolicy("any", builder => builder.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin().AllowCredentials()));//跨域
-            services.AddCors(c =>
+            services.AddCors(options =>
             {
-                c.AddPolicy("LimitRequests", policy =>
-                {
-                    // 支持多个域名端口，注意端口号后不要带/斜杆：比如localhost:8000/，是错的
-                    // 注意，http://127.0.0.1:1818 和 http://localhost:1818 是不一样的，尽量写两个
-                    policy
-                    .WithOrigins(AppSettingsHelper.app(new string[] { "Startup", "Cors", "IPs" }).Split(','))
-                    .AllowAnyHeader()//Ensures that the policy allows any header.
-                    .AllowAnyMethod();
-                });
+                options.AddPolicy("any",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    );//.AllowCredentials()
             });
 
+            //services.AddCors(c =>
+            //{
+            //    c.AddPolicy("LimitRequests", policy =>
+            //    {
+            //        // 支持多个域名端口，注意端口号后不要带/斜杆：比如localhost:8000/，是错的
+            //        // 注意，http://127.0.0.1:1818 和 http://localhost:1818 是不一样的，尽量写两个
+            //        policy
+            //        .WithOrigins(AppSettingsHelper.app(new string[] { "Startup", "Cors", "IPs" }).Split(','))
+            //        .AllowAnyHeader()//Ensures that the policy allows any header.
+            //        .AllowAnyMethod();
+            //    });
+            //});
+            #endregion
             services.AddSwaggerSetup();//添加swagger服务
 
             services.AddAuthorizationSetup();//添加权限认证
@@ -175,8 +185,7 @@ namespace Project.Core.Main
             });
             #endregion
 
-            //跨域
-            app.UseCors("LimitRequests");
+            
             //使用静态文件
             app.UseStaticFiles();
             // 使用cookie
@@ -185,6 +194,8 @@ namespace Project.Core.Main
             app.UseStatusCodePages();//把错误码返回前台，比如是404
             //路由中间件
             app.UseRouting();
+            //跨域
+            app.UseCors("any");
             // 先开启认证
             app.UseAuthentication();
             // 然后是授权中间件
@@ -198,8 +209,7 @@ namespace Project.Core.Main
                 //endpoints.MapControllers();
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "api/{controller=Login}/{action=GetJwtStr}/"
-                    ); 
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

@@ -32,7 +32,7 @@ namespace Project.Core.Main.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult GetJwtStr(string name, string pass)
+        public IActionResult GetJwtStr(string name="admin", string pass = "admin")
         {
             var token = JWTHelper.GetJwtStr(name, pass);
             return Ok(token);

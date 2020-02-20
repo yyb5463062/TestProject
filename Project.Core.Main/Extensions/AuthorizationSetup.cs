@@ -132,8 +132,11 @@ namespace Project.Core.Main.Extensions
             services.AddAuthentication(o =>
             {
                 o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                o.DefaultChallengeScheme = nameof(AuthenticationHandler<AuthenticationSchemeOptions>);
-                o.DefaultForbidScheme = nameof(AuthenticationHandler<AuthenticationSchemeOptions>);
+                //o.DefaultChallengeScheme = nameof(AuthenticationHandler<AuthenticationSchemeOptions>);
+                //o.DefaultForbidScheme = nameof(AuthenticationHandler<AuthenticationSchemeOptions>);
+                o.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
              // 添加JwtBearer服务
              .AddJwtBearer(o =>
@@ -162,8 +165,8 @@ namespace Project.Core.Main.Extensions
                      //    return Task.CompletedTask;
                      //}
                  };
-             })
-             .AddScheme<AuthenticationSchemeOptions, AuthenticationHandler<AuthenticationSchemeOptions>>(nameof(AuthenticationHandler<AuthenticationSchemeOptions>), o => { });
+             });
+             //.AddScheme<AuthenticationSchemeOptions, AuthenticationHandler<AuthenticationSchemeOptions>>(nameof(AuthenticationHandler<AuthenticationSchemeOptions>), o => { });
 
 
             //2.2【认证】、IdentityServer4 认证 (暂时忽略)

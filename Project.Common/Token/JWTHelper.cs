@@ -88,6 +88,10 @@ namespace Project.Common.Token
         /// <returns></returns>
         public static TokenModelJwt DeSerializeJwt(string jwtStr)
         {
+            if (!string.IsNullOrEmpty(jwtStr))
+            {
+                jwtStr = jwtStr.Replace("Bearer ", "");
+            }
             var jwtHandler = new JwtSecurityTokenHandler();
             JwtSecurityToken jwtToken = new JwtSecurityToken(jwtStr);
             object role;
